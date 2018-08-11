@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="dialog.css">
 </head>
 <body>
+  <!-- 第一种实现方式就是有一个额外的标签来充当遮罩层 因为多了一个标签，语义化不明确，所以不推荐 -->
   <div class="buttonContainer">
       <button class="showDialog">dialog</button>
   </div>
@@ -27,36 +28,58 @@
   <!-- 弹出层的盅罩 -->
   <div class="overlay"></div>
 <script>
-  let doc = document
-  let btn = doc.querySelector('.showDialog')
-  let dialog = doc.querySelector('.lightBox')
-  let overlay = doc.querySelector('.overlay')
-  //弹出层过渡结束前进状态的处理函数
-  function dialogBackward(){
-    event.target.classList.remove('dialogIndex')
-    event.target.removeEventListener('transitionend',dialogBackward)
-  }
-  function overlayBackward(){
-    event.target.classList.remove('overlayIndex')
-    event.target.removeEventListener('transitionend',overlayBackward)
-  }
-  function transitionEvent(elem,type,fb){
-    elem.addEventListener(type,fb);
-  }
-  doc.addEventListener('click',function(){
-    if(event.target === btn){
-      // 弹出层弹出时的过渡状态
-      dialog.classList.add('show','dialogIndex')
-      // 遮罩弹出时的过渡状态
-      overlay.classList.add('show','overlayIndex')
-      // 遮罩以及过渡状态结束的处理函数
-      transitionEvent(overlay,'transitionend',overlayForward)
-    } else if(event.target === doc.querySelector('.close') || event.target === doc.querySelector('.cancel') ||event.target === doc.querySelector('.overlay')){
-      dialog.classList.remove('show')
-      transitionEvent(dialog,'transitionend',dialogBackward)
-      overlay.classList.remove('show')
-      transitionEvent(overlay,'transitionend',overlayBackward)
+  // 弹出层
+  function showDialog() {
+
+    let doc = document
+    let dialog = $$('.lightBox')
+    let overlay = $$('.overlay')
+    let cancel = $$('.cancel')
+    let close = $$('.close')
+
+    //弹出层过渡结束状态的处理函数
+    function dialogBackward(){
+      this.classList.remove('dialogIndex')
+      removeEvent(this,'transitionend',dialogBackward)
     }
+    //遮罩层过渡结束状态的处理函数
+    function overlayBackward(){
+      this.classList.remove('overlayIndex')
+      removeEvent(this,'transitionend',overlayBackward)
+    }
+    // 弹出层打开后对事件的监听函数 点击的逻辑问题都会放在这里
+    function showDialogClick(){
+      let _target = event.target
+      if(_target === close || _target === cancel || _target === overlay){
+        dialog.classList.remove('show')
+        EventListener(dialog,'transitionend',dialogBackward)
+        overlay.classList.remove('show')
+        EventListener(overlay,'transitionend',overlayBackward)
+        removeEvent(doc,'click',showDialogClick)
+      }
+    }
+    // 事件绑定的封装函数
+    function EventListener(elem,type,fb){
+      elem.addEventListener(type,fb);
+    }
+    // 事件移除
+    function removeEvent(elem,type,fb){
+      elem.removeEventListener(type,fb)
+    }
+    // 简单选择器
+    function $$(elem) {
+      return doc.querySelector(elem)
+    }
+    
+    // 弹出层弹出时的过渡状态
+    dialog.classList.add('show','dialogIndex')
+    // 遮罩弹出时的过渡状态
+    overlay.classList.add('show','overlayIndex')
+    // 点击的处理
+    EventListener(doc,'click',showDialogClick)
+  }
+  document.querySelector('.showDialog').addEventListener('click',function(){
+    showDialog()
   })
 </script>
 </body>

@@ -6,57 +6,6 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>弹出层插件</title>
   <link rel="stylesheet" href="dialog.css">
-  <style>
-    
-    .modal{
-      z-index: 100;
-    }
-    .modal,.modal-shadow{
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-    .modal,.modal-dialog{
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-    .modal-shadow{
-      background: #000;
-    }
-    .fade{
-      opacity: 0;
-      transition: opacity .15s linear;
-    }
-    .in{
-      opacity: 1;
-    }
-    .modal-shadow, .modal-shadow.fade.in{
-      opacity: .7;
-    }
-    .modal-dialog{
-      font-size: 14px;
-      color:#383838;
-      box-shadow: none;
-      border-radius: 3px;
-      background: #fff;
-      border: none;
-    }
-    .vertical-center{
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
-    }
-    .flex-show{
-      display: flex;
-      width: 500px;
-      min-height: 600px;
-      margin: 48px auto;
-      padding: 0;
-    }
-  </style>
 </head>
 <body>
   <!-- 第一种实现方式就是有一个额外的标签来充当遮罩层 因为多了一个标签，语义化不明确，所以不推荐 -->

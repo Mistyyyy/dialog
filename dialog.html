@@ -99,8 +99,10 @@
       // 添加DOM
       document.body.append(addDom())
       // 给新增DOM添加in属性，触发transition效果
-      $$('.modal').classList.add('in')
-      
+      window.setTimeout(()=>{
+        $$('.modal').classList.add('in')
+      })
+
       EventListener(document,'click',clickHandle)
     }
     function $$(elem,context = document) {

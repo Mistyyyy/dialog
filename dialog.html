@@ -9,155 +9,124 @@
   <style>
     
     .modal{
+      z-index: 100;
+    }
+    .modal,.modal-shadow{
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: -100;
+    }
+    .modal,.modal-dialog{
+      overflow-x: hidden;
+      overflow-y: auto;
     }
     .modal-shadow{
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
       background: #000;
     }
     .fade{
       opacity: 0;
       transition: opacity .15s linear;
     }
-    .fade.in{
+    .in{
       opacity: 1;
     }
     .modal-shadow, .modal-shadow.fade.in{
       opacity: .7;
     }
-    .bg{
-      background: lightcoral;
+    .modal-dialog{
+      font-size: 14px;
+      color:#383838;
+      box-shadow: none;
+      border-radius: 3px;
+      background: #fff;
+      border: none;
+    }
+    .vertical-center{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .flex-show{
+      display: flex;
+      width: 500px;
+      min-height: 600px;
+      margin: 48px auto;
+      padding: 0;
     }
   </style>
 </head>
 <body>
   <!-- 第一种实现方式就是有一个额外的标签来充当遮罩层 因为多了一个标签，语义化不明确，所以不推荐 -->
-  <!-- <div class="buttonContainer">
-      <button class="showDialog">dialog</button>
-  </div> -->
   <button>show</button>
-  <div class="modal fade bg">
-    <!-- <div class="modal-shadow fade in">
-
-    </div>
-    <div class="modal-dialog">
-
-    </div> -->
-  </div>
+  
 <script>
-  document.querySelector('button').addEventListener('click',function(){
-      document.querySelector('.modal').classList.add('in')
-      document.querySelector('.modal').addEventListener('transitionend',function(){
-        console.log('sss')
-      })
-  })
-  // function showModal(doc = document){
-  //   let newFra = doc.createDocumentFragment()
-  //   let div = doc.createComment('div')
-  //   div.classList.add('modal','fade','in')
-  //   div.innerHTML = `
-  //   <div class="modal-shadow">
+  // 简单选择器的实现
+  {
+    function showDialog(){
 
-  //   </div>
-  //   <div class="modal-dialog">
+      function addDom(){
+        let container = document.createDocumentFragment()
+        let modal = document.createElement('div')
+        modal.classList.add('modal','fade','in')
+        modal.innerHTML = `
+        <div class="modal-shadow fade in"></div>
+        <div class="modal-dialog flex-show vertical-center">
+          <header class="header"></header>
+          <main class="main"></main>
+          <footer class="footer"></footer>
+        </div>
+        `
+        container.append(modal)
+        return container
+      }
+      
+      function containerTransitionEnd(){
+        removeEvent(this,'transitionend',containerTransitionEnd)
+        document.body.removeChild(this)
+      }
 
-  //   </div>
-  //   `
-  // }
-  // 弹出层
-  // 首先，页面上没有这些DOM节点，需要自己手动添加创建。这里使用document.createDocumentFragment()来使用
-  // 为了不频繁操作dom,只有第一次调用的时候，创建弹出层和遮罩层，关闭的时候，直接就将z-index放置在后面
-  // function showDialog(doc = document) {
-         
+      // function watchDom(){
+      //   console.log(event.target === $$('.modal'))
+      //   if(event.target === $$('.modal')) {
+      //     event.target.classList.add('in')
+      //     removeEvent(this,'DOMNodeInserted',watchDom)
+      //   }
+      // }
+
+      function clickHandle(){
+        if(event.target === $$('.modal-shadow')){
+          $$('.modal').classList.remove('in')
+          EventListener($$('.modal'),'transitionend',containerTransitionEnd)
+          removeEvent(this,'click',clickHandle)
+        }
+      }
+
+      document.body.append(addDom())
+      
+      // EventListener(document,'DOMNodeInserted',watchDom)
+      EventListener(document,'click',clickHandle)
+    }
+    function $$(elem,context = document) {
+      return context.querySelector(elem)
+    }
+    // 事件绑定
+    function EventListener(elem,type,fb){
+      elem.addEventListener(type,fb);
+    }
+    // 事件移除
+    function removeEvent(elem,type,fb){
+      elem.removeEventListener(type,fb)
+    }
+
+    // 点击显示按钮
+    let btn = $$('button')
+    EventListener(btn,'click',showDialog)
+  }
  
-
-  //   // 创建弹框和遮罩层dom节点
-  //   function createDialogAndShade(content){
-  //     let newFra = doc.createDocumentFragment()
-  //     let dialogTag = doc.createElement('div')
-  //     let shadeTag = doc.createElement('div')
-  //     dialogTag.classList.add('lightBox')
-  //     // 这只是第一次生成的模板，之后的情况会根据用户传入进来的参数来调整弹框显示的内容
-  //     dialogTag.innerHTML = `
-  //     <div class="header">
-  //       这是弹出层的头部
-  //       <button class="close">X</button>
-  //     </div>
-  //     <div class="body">
-  //       这是弹出层的内容
-  //     </div>
-  //     <div class="footer">
-  //       <button class="cancel showDialog">cancel</button>
-  //       <button class="showDialog">save</button>
-  //     </div>
-  //     `
-  //     shadeTag.classList.add('overlay')
-  //     newFra.append(dialogTag)
-  //     newFra.append(shadeTag)
-  //     return newFra
-  //   }
-  //   //弹出层过渡结束状态的处理函数
-  //   function dialogBackward(){
-  //     this.classList.remove('dialogIndex')
-  //     removeEvent(this,'transitionend',dialogBackward)
-  //   }
-  //   //遮罩层过渡结束状态的处理函数
-  //   function overlayBackward(){
-  //     this.classList.remove('overlayIndex')
-  //     removeEvent(this,'transitionend',overlayBackward)
-  //   }
-  //   // 弹出层打开后对事件的监听函数 点击的逻辑问题都会放在这里
-  //   function showDialogClick(){
-  //     let _target = event.target
-  //     if(_target === close || _target === cancel || _target === overlay){
-  //       dialog.classList.remove('show')
-  //       EventListener(dialog,'transitionend',dialogBackward)
-  //       overlay.classList.remove('show')
-  //       EventListener(overlay,'transitionend',overlayBackward)
-  //       removeEvent(doc,'click',showDialogClick)
-  //     }
-  //   }
-  //   // 事件绑定的封装函数
-  //   function EventListener(elem,type,fb){
-  //     elem.addEventListener(type,fb);
-  //   }
-  //   // 事件移除
-  //   function removeEvent(elem,type,fb){
-  //     elem.removeEventListener(type,fb)
-  //   }
-  //   // 简单选择器
-  //   function $$(elem,context = doc) {
-  //     return context.querySelector(elem)
-  //   }
-  //   //采用hack来试一下
-  //   if(!$$('.lightBox') && !$$('.overlay')){
-  //     doc.body.append(createDialogAndShade())
-  //   }    
-  //   let dialog = $$('.lightBox')
-  //   let overlay = $$('.overlay')
-  //   let cancel = $$('.cancel')
-  //   let close = $$('.close')
-  //   // promise.then(() => {
-  //   // 弹出层弹出时的过渡状态
-  //   dialog.classList.add('show','dialogIndex')
-  //   // 遮罩弹出时的过渡状态
-  //   overlay.classList.add('show','overlayIndex')
-  //   // 点击的处理
-  //   // })
-  //   EventListener(doc,'click',showDialogClick)
-  // }
-  // document.querySelector('.showDialog').addEventListener('click',function(){
-  //   showDialog()
-  // })
+ 
 </script>
 </body>
 </html>

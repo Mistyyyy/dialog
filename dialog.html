@@ -8,56 +8,6 @@
   <link rel="stylesheet" href="dialog.css">
 </head>
 <body>
-  <div class="buttonContainer">
-      <button class="showDialog">dialog</button>
-  </div>
-  <div class="lightBox">
-    <div class="header">
-      这是弹出层的头部
-      <button class="close">X</button>
-    </div>
-    <div class="body">
-      这是弹出层的内容
-    </div>
-    <div class="footer">
-      <button class="cancel showDialog">cancel</button>
-      <button class="showDialog">save</button>
-    </div>
-  </div>
-  <!-- 弹出层的盅罩 -->
-  <div class="overlay"></div>
-<script>
-  let doc = document
-  let btn = doc.querySelector('.showDialog')
-  let dialog = doc.querySelector('.lightBox')
-  let overlay = doc.querySelector('.overlay')
-  //弹出层过渡结束前进状态的处理函数
-  function dialogBackward(){
-    event.target.classList.remove('dialogIndex')
-    event.target.removeEventListener('transitionend',dialogBackward)
-  }
-  function overlayBackward(){
-    event.target.classList.remove('overlayIndex')
-    event.target.removeEventListener('transitionend',overlayBackward)
-  }
-  function transitionEvent(elem,type,fb){
-    elem.addEventListener(type,fb);
-  }
-  doc.addEventListener('click',function(){
-    if(event.target === btn){
-      // 弹出层弹出时的过渡状态
-      dialog.classList.add('show','dialogIndex')
-      // 遮罩弹出时的过渡状态
-      overlay.classList.add('show','overlayIndex')
-      // 遮罩以及过渡状态结束的处理函数
-      transitionEvent(overlay,'transitionend',overlayForward)
-    } else if(event.target === doc.querySelector('.close') || event.target === doc.querySelector('.cancel') ||event.target === doc.querySelector('.overlay')){
-      dialog.classList.remove('show')
-      transitionEvent(dialog,'transitionend',dialogBackward)
-      overlay.classList.remove('show')
-      transitionEvent(overlay,'transitionend',overlayBackward)
-    }
-  })
-</script>
+  
 </body>
 </html>

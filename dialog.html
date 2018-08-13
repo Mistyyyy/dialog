@@ -14,7 +14,31 @@
   
 <script>
   {
-    function showDialog(){
+    function showDialog({title,content,btn,doc=document,close=true,min=false}){
+      function $$(selector,context = document) {
+        return context.querySelector(selector)
+      }
+      // 事件绑定
+      function EventListener(elem,type,fb){
+        elem.addEventListener(type,fb);
+      }
+      // 事件移除
+      function removeEvent(elem,type,fb){
+        elem.removeEventListener(type,fb)
+      }
+      function handleButtonInsert(btn=[{name:'关闭',style:['btn']}]){
+        // 先把样式类名处理为字符串
+        let struct = ''
+        for(let key of btn){
+          let className = '' 
+          for(let name of key.style){
+            className += name + ' '
+          }
+          console.log(className)
+          struct += `<button ${`class=${className}`}>${key.name}</button>`
+        }
+        return struct
+      }
 
       function addDom(){
         let container = document.createDocumentFragment()
@@ -23,9 +47,22 @@
         modal.innerHTML = `
         <div class="modal-shadow fade in"></div>
         <div class="modal-dialog flex-show vertical-center">
-          <header class="header"></header>
-          <main class="main"></main>
-          <footer class="footer"></footer>
+          <div class="dialog-content">
+            <form class="dialog-form">
+              <header class="dialog-header">
+                  <h4>
+                    <span>${title}<span>
+                  </h4>
+                  <a class="closeIcon">X</a>
+              </header>
+              <main class="dialog-main">
+                ${content}
+              </main>
+              <footer class="dialog-footer">
+                ${handleButtonInsert(btn)}
+              </footer>
+            </form>
+          </div>
         </div>
         `
         container.append(modal)
@@ -39,7 +76,7 @@
 
 
       function clickHandle(){
-        if(event.target === $$('.modal-shadow')){
+        if(event.target === $$('.modal-shadow') || event.target === $$('.closeIcon')){
           $$('.modal').classList.remove('in')
           EventListener($$('.modal'),'transitionend',containerTransitionEnd)
           removeEvent(this,'click',clickHandle)
@@ -54,22 +91,30 @@
 
       EventListener(document,'click',clickHandle)
     }
-    function $$(elem,context = document) {
-      return context.querySelector(elem)
-    }
-    // 事件绑定
-    function EventListener(elem,type,fb){
-      elem.addEventListener(type,fb);
-    }
-    // 事件移除
-    function removeEvent(elem,type,fb){
-      elem.removeEventListener(type,fb)
-    }
+  
 
     // 点击显示按钮
-    let btn = $$('button')
-    EventListener(btn,'click',showDialog)
+    // 调用方式
+    // 默认头部有关闭按钮
+    let btn = document.querySelector('button')
+    btn.addEventListener('click',()=>{
+      showDialog({
+        title:'弹出层',
+        content:'这是弹出层的内容',
+        url:'' ,//调用的接口名称,
+        min:'',//是否有最小化
+        full:'',//是否有最大化
+        btn:[{name:'取消',style:['btn']},{name:'保存',style:['btn','btn-normal']}],//底部操作栏的按钮 名字和样式
+        fb:[() => {
+          this.close()
+        },()=>{
+          this.save()
+        }]//操作栏按钮的回调函数
+      })
+    })
   }
+
+  
  
  
 </script>

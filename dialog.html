@@ -70,7 +70,7 @@
       function addDom(){
         let container = document.createDocumentFragment()
         let modal = document.createElement('div')
-        modal.classList.add('modal','fade','in')
+        modal.classList.add('modal','fade')
         modal.innerHTML = `
         <div class="modal-shadow fade in"></div>
         <div class="modal-dialog flex-show vertical-center">
@@ -88,13 +88,6 @@
         document.body.removeChild(this)
       }
 
-      // function watchDom(){
-      //   console.log(event.target === $$('.modal'))
-      //   if(event.target === $$('.modal')) {
-      //     event.target.classList.add('in')
-      //     removeEvent(this,'DOMNodeInserted',watchDom)
-      //   }
-      // }
 
       function clickHandle(){
         if(event.target === $$('.modal-shadow')){
@@ -103,10 +96,11 @@
           removeEvent(this,'click',clickHandle)
         }
       }
-
+      // 添加DOM
       document.body.append(addDom())
+      // 给新增DOM添加in属性，触发transition效果
+      $$('.modal').classList.add('in')
       
-      // EventListener(document,'DOMNodeInserted',watchDom)
       EventListener(document,'click',clickHandle)
     }
     function $$(elem,context = document) {
